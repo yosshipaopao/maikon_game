@@ -191,3 +191,4 @@ cvs = tkinter.Canvas(root, width = 800, height = 600, bg ="black")
 cvs.pack()
 main_proc()
 root.mainloop()
+#まだばぐってる
