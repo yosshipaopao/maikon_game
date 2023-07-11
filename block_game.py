@@ -1,7 +1,7 @@
 import tkinter
 import random
 
-FNT = ("Time New Roman")
+FNT = ("Time New Roman", 20, "bold")
 
 key = ""
 
@@ -43,8 +43,9 @@ def draw_block():
             if block[y][x] == 1:
                 cvs.create_rectangle(gx+1, gy+4, gx+79,gy+32, fill = block_color(x,y), width = 0, tag = "BG")
                 is_clr = False
-    cvs.create_text(200, 20, text = "STAGE" + str(stage), fill = "white", font = FNT, tag = "BG")
-    cvs.create_text(600, 20, text = "SCORE" + str(score), fill = "white", font = FNT, tag = "BG")
+    cvs.create_text(200, 20, text = "STAGE:" + str(stage), fill = "white", font = FNT, tag = "BG")
+    cvs.create_text(600, 20, text = "SCORE:" + str(score), fill = "white", font = FNT, tag = "BG")
+    cvs.create_text(200, 60, text = "index:" +str(idx),fill = "white", font = FNT, tag = "BG")
 
 def block_color(x,y): #format()で16新数に変換可
     col = "#{0:x}{1:x}{2:x}".format(15-x-int(y/3), x+1, y*3+3)
@@ -53,6 +54,7 @@ def block_color(x,y): #format()で16新数に変換可
 def draw_bar():
     cvs.delete("BAR")
     cvs.create_rectangle(bar_x-80, bar_y-12, bar_x+80, bar_y+12, fill="silver", width = 0,tag = "BAR")
+    cvs.create_rectangle(bar_x-78, bar_y-14, bar_x+78,bar_y+14, fill = "silver", width = 0, tag = "BAR")
     cvs.create_rectangle(bar_x-78, bar_y-12, bar_x+78, bar_y+12, fill = "white", width = 0, tag = "BAR")
 
 def move_bar():
@@ -84,7 +86,7 @@ def move_ball():
         score = score+10
 
     ball_y = ball_y + ball_xp
-    if ball_y >=600:
+    if ball_y >= 600:
         idx = 2
         tme = 0
         return
@@ -105,7 +107,7 @@ def move_ball():
         elif bar_x-100 <= ball_x and ball_x <= bar_x-80:
             ball_yp = -10
             ball_xp = random.randint(-20,-10)
-            scpre = score+2
+            score = score+2
         elif bar_x+80 <=ball_x and ball_x <= bar_x+100:
             ball_yp = -10
             ball_xp = random.randint(10,20)
@@ -120,7 +122,7 @@ def main_proc():
         if tmr == 1:
             stage = 1
             score = 0
-        if tmr ==2:
+        if tmr == 2:
             ball_x = 160
             ball_y = 240
             ball_xp = 10
@@ -133,54 +135,54 @@ def main_proc():
         if tmr == 30:
             cvs.delete("TXT")
             idx = 1
-        elif idx == 1:
-            move_ball()
-            move_bar()
-            draw_block()
-            draw_ball()
-            draw_bar()
-            if is_clr == True:
+    elif idx == 1:
+        move_ball()
+        move_bar()
+        draw_block()
+        draw_ball()
+        draw_bar()
+        if is_clr == True:
                 idx = 3
                 tmr = 0
-        elif idx == 2:
-            tmr = tmr+1
-            if tmr == 1:
-                cvs.create_text(400,260, text = "GAME OVER", fill = "red", font = FNT, tag = "TXT")
-            if tmr == 15:
-                cvs.create_text(300,340, text = "[R]eplay", fill = "cyan", font = FNT, tag = "TXT")
-                cvs.create_text(500,340, text = "[N]ew game", fill = "yellow", font = FNT, tag = "TXT")
-            if key == "r":
-                cvs.delete("TXT")
+    elif idx == 2:
+        tmr = tmr+1
+        if tmr == 1:
+            cvs.create_text(400,260, text = "GAME OVER", fill = "red", font = FNT, tag = "TXT")
+        if tmr == 15:
+            cvs.create_text(300,340, text = "[R]eplay", fill = "cyan", font = FNT, tag = "TXT")
+            cvs.create_text(500,340, text = "[N]ew game", fill = "yellow", font = FNT, tag = "TXT")
+        if key == "r":
+            cvs.delete("TXT")
+            idx = 0
+            tmr = 1
+        if key == "n":
+            cvs.delete("TXT")
+            for y in range(5):
+                for x in range(10):
+                    block[y][x] = 1
+            idx = 0
+            tmr = 0
+    elif idx == 3:
+        tmr = tmr + 1
+        if tmr == 1:
+            cvs.create_text(400,260, text = "STAGE CLEAR", fill = "lime", font = FNT, tag = "TXT")
+        if tmr == 15:
+            cvs.create_text(400,340, text = "NEXT [SPACE]", fill = "cyan", font = FNT, tag = "TXT")
+        if key == "space":
+            cvs.delete("TXT")
+            for y in range(5):
+                for x in range(10):
+                    block[y][x] = 1
                 idx = 0
                 tmr = 1
-            if key == "n":
-                cvs.delete("TXT")
-                for y in range(5):
-                    for x in range(10):
-                        block[y][x] = 1
-                idx = 0
-                tmr = 0
-        elif idx == 3:
-            tmr = tmr + 1
-            if tmr == 1:
-                cvs.create_text(400,260, text = "STAGE CLEAR", fill = "lime", font = FNT, tag = "TXT")
-            if tmr == 15:
-                cvs.create_text(400,340, text = "NEXT [SPACE]", fill = "cyan", font = FNT, tag = "TXT")
-            if key == "space":
-                cvs.delete("TXT")
-                for y in range(5):
-                    for x in range(10):
-                        block[y][x] = 1
-                    idx = 0
-                    tmr = 1
-                    stage = stage+1
+                stage = stage+1
 
-        if keyoff == True:
-            keyoff = False
-            if key != "":
-                key = ""
+    if keyoff == True:
+        keyoff = False
+        if key != "":
+            key = ""
 
-        root.after(50, main_proc)
+    root.after(50, main_proc)
 
 root = tkinter.Tk()
 root.title("Block Game")
