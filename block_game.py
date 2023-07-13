@@ -1,7 +1,7 @@
 import tkinter
 import random
 
-FNT = ("Time New Roman", 20, "bold")
+FNT = ("Terminal", 20, "normal")
 
 key = ""
 
@@ -23,6 +23,7 @@ for i in range(5):
     block.append([1]*10)
 for i in range(10):
     block.append([0]*10)
+print(block)
 
 def key_down(e):
     global key
@@ -85,14 +86,14 @@ def move_ball():
         ball_xp = -ball_xp
         score = score+10
 
-    ball_y = ball_y + ball_xp
-    if ball_y >= 600:
+    ball_y = ball_y + ball_yp
+    if ball_y >=600:
         idx = 2
-        tme = 0
+        tmr = 0
         return
     if ball_y < 20:
         ball_y = 20
-        ball_xp = -ball_yp
+        ball_yp = -ball_yp
     x = int(ball_x/80)
     y = int(ball_y/40)
     if block[y][x] == 1:
@@ -104,14 +105,17 @@ def move_ball():
         if bar_x-80 <= ball_x and ball_x <= bar_x+80:
             ball_yp = -10
             score = score+1
+            print("A")
         elif bar_x-100 <= ball_x and ball_x <= bar_x-80:
             ball_yp = -10
             ball_xp = random.randint(-20,-10)
             score = score+2
+            print("B")
         elif bar_x+80 <=ball_x and ball_x <= bar_x+100:
             ball_yp = -10
             ball_xp = random.randint(10,20)
             score = score+2
+            print("C")
 
 def main_proc():
     global key,keyoff
@@ -135,6 +139,9 @@ def main_proc():
         if tmr == 30:
             cvs.delete("TXT")
             idx = 1
+            print(block)
+
+            
     elif idx == 1:
         move_ball()
         move_bar()
@@ -142,8 +149,8 @@ def main_proc():
         draw_ball()
         draw_bar()
         if is_clr == True:
-                idx = 3
-                tmr = 0
+            idx = 3
+            tmr = 0
     elif idx == 2:
         tmr = tmr+1
         if tmr == 1:
@@ -175,7 +182,7 @@ def main_proc():
                     block[y][x] = 1
                 idx = 0
                 tmr = 1
-                stage = stage+1
+            stage = stage+1
 
     if keyoff == True:
         keyoff = False
@@ -193,4 +200,3 @@ cvs = tkinter.Canvas(root, width = 800, height = 600, bg ="black")
 cvs.pack()
 main_proc()
 root.mainloop()
-#まだばぐってる
