@@ -19,6 +19,7 @@ ball_y = 0
 ball_xp = 0
 ball_yp = 0
 is_clr = True
+maxstage = 2
 block = []
 
 def set_blocklist():
@@ -49,14 +50,35 @@ def set_blocklist():
             [0,0,0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0,0,0],
             [0,0,0,0,0,0,0,0,0,0]
+            #10*27
         ]
     elif stage == 2:
         block = [
+            [0,0,0,0,0,0,0,0,0,0],
+            [1,1,1,1,1,1,1,1,1,1],
+            [1,0,1,0,1,1,0,1,0,1],
+            [1,1,1,0,1,1,0,1,1,1],
             [1,1,0,1,1,1,1,0,1,1],
-            [],
-            [],
-            [],
-            []
+            [1,1,1,1,1,1,1,1,1,1],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0]
+            #10*27
         ]
 
 def key_down(e):
@@ -79,7 +101,7 @@ def draw_block():
                 cvs.create_image(gx+11, gy+0, image = blick, tag = "BG")
                 is_clr = False
     cvs.create_text(230, 20, text = "STAGE: " + str(stage), fill = "white", font = FNT, tag = "BG")
-    cvs.create_text(230, 40, text = "SCORE: " + str(score), fill = "white", font = FNT, tag = "BG")
+    cvs.create_text(250, 40, text = "SCORE: " + str(score), fill = "white", font = FNT, tag = "BG")
 
                 
 def draw_bar():
@@ -104,7 +126,7 @@ def move_ball():
     if ball_x > 197:
         ball_x = 197
         ball_xp = -ball_xp
-    x = int(ball_x/20)
+    x = int( ball_x/20)
     y = int(ball_y/8)
     if ball_y <= 190:
         if block[y][x] == 1:
@@ -216,10 +238,14 @@ def main_proc():
             cvs.create_text(50, 150, text = "[Space]to next", fill = "white", font = FNT, tag = "TXT")
             cvs.create_text(150, 150, text = "[B]Back to title", fill = "white", font = FNT, tag = "TXT")
         if key == "space":
-            stage = stage+1
-            cvs.delete("TXT")
-            set_blocklist()
-            idx = 1
+            if stage == maxstage:
+                cvs.delete("TXT")
+                cvs.create_text(100, 200, text = "All stage creared", fill = "white", font = FNT, tag = "TXT")
+            else:
+                stage = stage+1
+                cvs.delete("TXT")
+                set_blocklist()
+                idx = 1
         if key =="b":
             cvs.delete("TXT")
             idx = 0
