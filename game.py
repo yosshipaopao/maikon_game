@@ -3,6 +3,7 @@ import random
 import numpy
 import pygame
 from pygame.locals import *
+from PIL import Image
 
 #いろいろ
 stage = 0
@@ -249,10 +250,12 @@ def main():
                 exit()
             
         ### こちらがディスプレイ表示用
-        pixArray = pygame.PixelArray(screen)
-        array = numpy.uint8(pixArray)
+        pixArray = pygame.surfarray.pixels3d(screen)
+        array = numpy.fliplr(numpy.rot90(numpy.uint8(pixArray),-1))
+        Image.fromarray(array).save("screen.png")
         #print(array)
         del pixArray
+        del array
         ### ここまで
 if __name__ == "__main__":
     main()
