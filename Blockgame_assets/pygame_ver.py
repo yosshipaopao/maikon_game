@@ -1,4 +1,5 @@
 import math
+import random
 import numpy
 import pygame
 from pygame.locals import *
@@ -102,8 +103,10 @@ class Ball(pygame.sprite.Sprite):
     def start(self):
         self.rect.centerx = self.player.rect.centerx
         self.rect.bottom = self.player.rect.top
-        self.dx = 0
-        self.dy = -self.speed
+        radian=random.uniform(60,120)
+        angle = math.radians(radian)
+        self.dx = self.speed * math.cos(angle)
+        self.dy = -self.speed * math.sin(angle)
         self.update = self.move
     def move(self):
         self.rect.centerx += self.dx
