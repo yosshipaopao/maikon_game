@@ -1,11 +1,7 @@
 from busio import SPI
-from board import SCK, MOSI, MISO, D8, D18, D23, D24, D2, D3
+from board import SCK, MOSI, MISO, D8, D18, D23, D24, D3
 from digitalio import DigitalInOut, Direction
-from adafruit_rgb_display.rgb import color565
 from adafruit_rgb_display.ili9341 import ILI9341
-from PIL import Image, ImageDraw
-import cv2
-import os
 CS_PIN    = DigitalInOut(D8)
 LED_PIN   = DigitalInOut(D18)
 RESET_PIN = DigitalInOut(D23)
@@ -28,15 +24,6 @@ display = ILI9341(
     rotation = 90,
     
     baudrate=24000000)
-def display_img(filename, error_mark=False):
-    if not (os.path.isfile(filename)):
-        print("error")
-        return
-    img = cv2.imread(filename, cv2.IMREAD_COLOR)
-    img = cv2.resize(img, (320, 240),  interpolation = cv2.INTER_AREA)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    if error_mark:
-        cv2.rectangle(img, (0, 0), (2, 2), (255, 255, 255), thickness=-1)
-    frame = Image.fromarray(img)
-    display.image(frame)
+def display_img(image):
+    display.image(image)
 display_img("screen.png")

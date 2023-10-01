@@ -1,10 +1,40 @@
 import math
 import random
 import numpy
+import cv2
 import pygame
 from pygame.locals import *
 from PIL import Image
+"""
+from busio import SPI
+from board import SCK, MOSI, MISO, D8, D18, D23, D24, D2, D3
+from digitalio import DigitalInOut, Direction
+from adafruit_rgb_display.rgb import color565
+from adafruit_rgb_display.ili9341 import ILI9341
 
+CS_PIN    = DigitalInOut(D8)
+LED_PIN   = DigitalInOut(D18)
+RESET_PIN = DigitalInOut(D23)
+DC_PIN    = DigitalInOut(D24)
+LED_PIN.direction = Direction.OUTPUT
+
+SWITCH_PIN = DigitalInOut(D3)
+SWITCH_PIN.direction = Direction.INPUT
+
+UDP_SHUTDOWN_SH_PORT=50001
+
+spi = SPI(clock=SCK, MOSI=MOSI, MISO=MISO)
+display = ILI9341(
+    spi,
+    cs = CS_PIN,
+    dc = DC_PIN,
+    rst = RESET_PIN,
+    width = 240,
+    height = 320,
+    rotation = 90,
+    
+    baudrate=24000000)
+"""
 #いろいろ
 stage = 0
 block =[[]]
@@ -252,8 +282,10 @@ def main():
         ### こちらがディスプレイ表示用
         pixArray = pygame.surfarray.pixels3d(screen)
         array = numpy.fliplr(numpy.rot90(numpy.uint8(pixArray),-1))
-        Image.fromarray(array).save("screen.png")
-        #print(array)
+        #array = cv2.cvtColor(array, cv2.COLOR_BGR2RGB)
+        img = Image.fromarray(array)
+        #img.save("screen.png")
+        #display.image(img)
         del pixArray
         del array
         ### ここまで
