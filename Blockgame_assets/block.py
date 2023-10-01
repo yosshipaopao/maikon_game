@@ -1,6 +1,7 @@
 import tkinter
 import random
-
+#import numpy as np
+import io 
 FNT = ("Terminal", 10, "normal")
 
 
@@ -256,7 +257,12 @@ def main_proc():
         if key != "":
             key = ""
 
+
+    data = io.BytesIO(cvs.postscript(colormode = 'color').encode('utf-8'))
+    print(type(data))
+
     root.after(50,main_proc)
+
 
 root = tkinter.Tk()
 root.title("Blick.")
