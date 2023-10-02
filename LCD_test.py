@@ -14,17 +14,17 @@ from adafruit_rgb_display.ili9341 import ILI9341
 from PIL import Image, ImageDraw
 import cv2
 
-from bs4 import BeautifulSoup
-from urllib import request
-from pathlib import Path
+#from bs4 import BeautifulSoup
+#from urllib import request
+#from pathlib import Path
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome import service as fs
-from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import WebDriverException
+#from selenium import webdriver
+#from selenium.webdriver.common.by import By
+#from selenium.webdriver.chrome import service as fs
+#from selenium.webdriver.chrome.options import Options
+#from selenium.common.exceptions import WebDriverException
 
-import socket
+#import socket
 
 #### user configurations ####
 URL_HP = 'https://tenki.jp/radar/3/15/'
@@ -70,7 +70,7 @@ status_sleep = False
 
 filenames = []
 lock_filenames = threading.Lock()
-
+"""
 class DownloaderThread(threading.Thread):
     def __init__(self):
         super(DownloaderThread, self).__init__()
@@ -90,7 +90,8 @@ class DownloaderThread(threading.Thread):
             time.sleep(1)
             if self.stop_event.is_set():
                 break
-
+"""
+"""
 def logger_write(msg):
     dt_now = datetime.datetime.now()
     filename = 'log/{0:04}{1:02}{2:02}.log'.format(dt_now.year, dt_now.month, dt_now.day)
@@ -113,7 +114,7 @@ def logger_cleanup(past_days=7):
         if filename not in white_list:
             logger_write("Creanup delete " + filename)
             os.remove(filename)
-
+"""
 def display_img(filename, error_mark=False):
     if not (os.path.isfile(filename)):
         filename = ERROR_PNG
@@ -124,28 +125,30 @@ def display_img(filename, error_mark=False):
         cv2.rectangle(img, (0, 0), (2, 2), (255, 255, 255), thickness=-1)
     frame = Image.fromarray(img)
     display.image(frame)
-
+"""
 # get filenames snapshot
 def get_filenames():
     lock_filenames.acquire()
     temp_filenames = copy.deepcopy(filenames)
     lock_filenames.release()
     return temp_filenames
-
+"""
+"""
 # set filenames update
 def set_filenames(arg_filenames):
     global filenames
     lock_filenames.acquire()
     filenames = copy.deepcopy(arg_filenames)
     lock_filenames.release()
-
+"""
+"""
 def get_latest_filename():
     lock_filenames.acquire()
     latest_filename = filenames[-1]
     lock_filenames.release()
     return latest_filename
-
-
+"""
+"""
 def download_radar_images():
     global status_download_error_count
     global status_sleep
@@ -199,7 +202,8 @@ def download_radar_images():
     finally:
         browser.quit()
         return
-
+"""
+"""
 def display_radar_images(latest_only = False):
     temp_filenames = get_filenames()
     file_count = len(temp_filenames)
@@ -222,7 +226,8 @@ def display_radar_images(latest_only = False):
         display_img(temp_filenames[file_count-1], error_mark=(status_download_error_count>0))
     else:
         display_img(ERROR_PNG)
-
+"""
+"""
 def cleanup_unused_images():
     temp_filenames = get_filenames()
     actual_filenames = sorted(glob.glob('tmp/*.png'))
@@ -231,10 +236,8 @@ def cleanup_unused_images():
         if filename not in temp_filenames:
             logger_write("Creanup delete " + filename)
             os.remove(filename)
-
+"""
 def main():
-    global status_sleep
-    logger_write("weather_rader_lcd.py main stared.")
     display_img("./screen.png")
     LED_PIN.value = True
     
