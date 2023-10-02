@@ -14,17 +14,17 @@ from adafruit_rgb_display.ili9341 import ILI9341
 from PIL import Image, ImageDraw
 import cv2
 
-#from bs4 import BeautifulSoup
-#from urllib import request
-#from pathlib import Path
+from bs4 import BeautifulSoup
+from urllib import request
+from pathlib import Path
 
-#from selenium import webdriver
-#from selenium.webdriver.common.by import By
-#from selenium.webdriver.chrome import service as fs
-#from selenium.webdriver.chrome.options import Options
-#from selenium.common.exceptions import WebDriverException
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome import service as fs
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import WebDriverException
 
-#import socket
+import socket
 
 #### user configurations ####
 URL_HP = 'https://tenki.jp/radar/3/15/'
@@ -59,8 +59,6 @@ display = ILI9341(
 IN_PREPARATION_PNG = 'img/in_preparation.png'
 ERROR_PNG = 'img/error.png'
 SLEEP_PNG = 'img/sleep.png'
-CHROMEDRIVER = "/usr/lib/chromium-browser/chromedriver"
-#CHROME_SERVICE = fs.Service(executable_path=CHROMEDRIVER)
 POWEROFF_SEC=5
 CLEANUP_MINUTE=10
 DOWNLOAD_ERROR_RETRY_COUNT = 1
@@ -70,51 +68,8 @@ status_sleep = False
 
 filenames = []
 lock_filenames = threading.Lock()
-"""
-class DownloaderThread(threading.Thread):
-    def __init__(self):
-        super(DownloaderThread, self).__init__()
-        self.stop_event = threading.Event()
 
-    def stop(self):
-        self.stop_event.set()
 
-    def run(self):
-        delta_next = datetime.timedelta(seconds=90)
-        dt_next = datetime.datetime.now() + delta_next
-        while True:
-            dt_now = datetime.datetime.now()
-            if dt_next < dt_now:
-                download_radar_images()
-                dt_next = dt_now + delta_next
-            time.sleep(1)
-            if self.stop_event.is_set():
-                break
-"""
-"""
-def logger_write(msg):
-    dt_now = datetime.datetime.now()
-    filename = 'log/{0:04}{1:02}{2:02}.log'.format(dt_now.year, dt_now.month, dt_now.day)
-    timestamp = '{0:02}:{1:02}:{2:02}'.format(dt_now.hour, dt_now.minute, dt_now.second)
-    with open(filename, mode='a') as f:
-        writeline = '{} {}\n'.format(timestamp, msg)
-        f.write(writeline)
-        print(timestamp, msg)
-
-def logger_cleanup(past_days=7):
-    dt_now = datetime.datetime.now()
-    white_list = []
-    for i in range(past_days):
-        dt_past = dt_now - datetime.timedelta(days=i)
-        filename = 'log/{0:04}{1:02}{2:02}.log'.format(dt_past.year, dt_past.month, dt_past.day)
-        white_list.append(filename)
-
-    actual_filenames = sorted(glob.glob('log/*.log'))
-    for filename in actual_filenames:
-        if filename not in white_list:
-            logger_write("Creanup delete " + filename)
-            os.remove(filename)
-"""
 def display_img(filename, error_mark=False):
     if not (os.path.isfile(filename)):
         filename = ERROR_PNG
@@ -125,30 +80,28 @@ def display_img(filename, error_mark=False):
         cv2.rectangle(img, (0, 0), (2, 2), (255, 255, 255), thickness=-1)
     frame = Image.fromarray(img)
     display.image(frame)
-"""
+
 # get filenames snapshot
 def get_filenames():
     lock_filenames.acquire()
     temp_filenames = copy.deepcopy(filenames)
     lock_filenames.release()
     return temp_filenames
-"""
-"""
+
 # set filenames update
 def set_filenames(arg_filenames):
     global filenames
     lock_filenames.acquire()
     filenames = copy.deepcopy(arg_filenames)
     lock_filenames.release()
-"""
-"""
+
 def get_latest_filename():
     lock_filenames.acquire()
     latest_filename = filenames[-1]
     lock_filenames.release()
     return latest_filename
-"""
-"""
+
+
 def download_radar_images():
     global status_download_error_count
     global status_sleep
@@ -202,8 +155,7 @@ def download_radar_images():
     finally:
         browser.quit()
         return
-"""
-"""
+
 def display_radar_images(latest_only = False):
     temp_filenames = get_filenames()
     file_count = len(temp_filenames)
@@ -226,8 +178,7 @@ def display_radar_images(latest_only = False):
         display_img(temp_filenames[file_count-1], error_mark=(status_download_error_count>0))
     else:
         display_img(ERROR_PNG)
-"""
-"""
+
 def cleanup_unused_images():
     temp_filenames = get_filenames()
     actual_filenames = sorted(glob.glob('tmp/*.png'))
@@ -236,11 +187,59 @@ def cleanup_unused_images():
         if filename not in temp_filenames:
             logger_write("Creanup delete " + filename)
             os.remove(filename)
-"""
+
 def main():
+    global status_sleep
+    logger_write("weather_rader_lcd.py main stared.")
+    display_img(IN_PREPARATION_PNG)
     LED_PIN.value = True
-    display_img("./screen.png")
-    
+
+    download_radar_images()
+    display_radar_images(latest_only = True)
+
+    download_th = DownloaderThread()
+    download_th.daemon = True
+    download_th.start()
+
+    led_off_time = datetime.datetime.now() + datetime.timedelta(minutes=LED_OFF_MINUTE)
+    cleanup_time = datetime.datetime.now() + datetime.timedelta(minutes=CLEANUP_MINUTE)
+    poweroff_time = datetime.datetime.now() + datetime.timedelta(seconds=POWEROFF_SEC)
+    latest_filename_prev = ''
+    switch_value_prev = False
+    while True:
+        # 10sec touch switch to shutdown pc
+        if SWITCH_PIN.value:
+            if poweroff_time < datetime.datetime.now():
+                logger_write("shutdown ...")
+                status_sleep=True
+                display_img(SLEEP_PNG)
+                udp_shutdown_sh_address = ('127.0.0.1', UDP_SHUTDOWN_SH_PORT)
+                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                send_len = sock.sendto('shutdown now'.encode('utf-8'), udp_shutdown_sh_address)
+                time.sleep(30)
+        else:
+            poweroff_time = datetime.datetime.now() + datetime.timedelta(seconds=POWEROFF_SEC)
+        # 1shot touch switch to display radar
+        if switch_value_prev != SWITCH_PIN.value:
+            switch_value_prev = SWITCH_PIN.value
+            if not SWITCH_PIN.value:
+                LED_PIN.value = True
+                display_radar_images()
+                led_off_time = datetime.datetime.now() + datetime.timedelta(minutes=LED_OFF_MINUTE)
+        # auto led off timer
+        if led_off_time < datetime.datetime.now():
+            LED_PIN.value = False
+        # auto cleanup image timer
+        if cleanup_time < datetime.datetime.now():
+            cleanup_unused_images()
+            logger_cleanup()
+            cleanup_time = datetime.datetime.now() + datetime.timedelta(minutes=CLEANUP_MINUTE)
+        latest_filename = get_latest_filename()
+        # auto display latest image
+        if latest_filename_prev != latest_filename:
+            latest_filename_prev = latest_filename
+            display_radar_images(latest_only = True)
+        time.sleep(0.1)
 
 if __name__ == '__main__':
     sys.exit(main())
