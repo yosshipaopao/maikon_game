@@ -1,14 +1,12 @@
 import math
 import random
 import numpy
-import cv2
 import pygame
 from pygame.locals import *
 from PIL import Image
-"""
 from busio import SPI
-from board import SCK, MOSI, MISO, D8, D18, D23, D24, D2, D3
-from digitalio import DigitalInOut, Direction
+from board import SCK, MOSI, MISO, D8, D18, D23, D24, D2, D3,D20,D21
+from digitalio import DigitalInOut, Direction,Pull
 from adafruit_rgb_display.rgb import color565
 from adafruit_rgb_display.ili9341 import ILI9341
 
@@ -34,7 +32,11 @@ display = ILI9341(
     rotation = 90,
     
     baudrate=24000000)
-"""
+
+CONTROLER_L = DigitalInOut(D20)
+CONTROLER_R = DigitalInOut(D21)
+CONTROLER_L.switch_to_input(pull=Pull.UP)
+CONTROLER_R.switch_to_input(pull=Pull.UP)
 #いろいろ
 stage = 0
 block =[[]]
@@ -268,7 +270,8 @@ def main():
                     info.stage=1
                     STATUS=0
                 
-
+        print("L",CONTROLER_L.value)
+        print("R",CONTROLER_R.value)
         ## ここからおまじない
         pygame.display.update()
         for event in pygame.event.get():
@@ -285,7 +288,7 @@ def main():
         #array = cv2.cvtColor(array, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(array)
         #img.save("screen.png")
-        #display.image(img)
+        display.image(img)
         del pixArray
         del array
         ### ここまで
