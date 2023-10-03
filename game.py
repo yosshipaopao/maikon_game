@@ -37,12 +37,9 @@ display = ILI9341(
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(20, GPIO.IN)
 GPIO.setup(21, GPIO.IN)
+GPIO.setup(19, GPIO.IN)
+GPIO.setup(26, GPIO.IN)
 
-
-#CONTROLER_L = DigitalInOut(D20)
-#CONTROLER_R = DigitalInOut(D21)
-#CONTROLER_L.switch_to_input(pull=Pull.UP)
-#CONTROLER_R.switch_to_input(pull=Pull.UP)
 #いろいろ
 stage = 0
 block =[[]]
@@ -276,8 +273,8 @@ def main():
                     info.stage=1
                     STATUS=0
                 
-        print("L",GPIO.input(20))
-        print("R",GPIO.input(21))
+        print("!",GPIO.input(20),GPIO.input(21))
+        print("?",GPIO.input(19),GPIO.input(26))
         ## ここからおまじない
         pygame.display.update()
         for event in pygame.event.get():
