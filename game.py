@@ -5,10 +5,11 @@ import pygame
 from pygame.locals import *
 from PIL import Image
 from busio import SPI
-from board import SCK, MOSI, MISO, D8, D18, D23, D24, D2, D3,D20,D21
+from board import SCK, MOSI, MISO, D8, D18, D23, D24, D2, D3,D20,D21,D19,D26
 from digitalio import DigitalInOut, Direction,Pull
 from adafruit_rgb_display.rgb import color565
 from adafruit_rgb_display.ili9341 import ILI9341
+import RPi.GPIO as GPIO
 
 CS_PIN    = DigitalInOut(D8)
 LED_PIN   = DigitalInOut(D18)
@@ -33,10 +34,15 @@ display = ILI9341(
     
     baudrate=24000000)
 
-CONTROLER_L = DigitalInOut(D20)
-CONTROLER_R = DigitalInOut(D21)
-CONTROLER_L.switch_to_input(pull=Pull.UP)
-CONTROLER_R.switch_to_input(pull=Pull.UP)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(20, GPIO.IN)
+GPIO.setup(21, GPIO.IN)
+
+
+#CONTROLER_L = DigitalInOut(D20)
+#CONTROLER_R = DigitalInOut(D21)
+#CONTROLER_L.switch_to_input(pull=Pull.UP)
+#CONTROLER_R.switch_to_input(pull=Pull.UP)
 #いろいろ
 stage = 0
 block =[[]]
@@ -270,8 +276,8 @@ def main():
                     info.stage=1
                     STATUS=0
                 
-        print("L",CONTROLER_L.value)
-        print("R",CONTROLER_R.value)
+        print("L",GPIO.input(20))
+        print("R",GPIO.input(21))
         ## ここからおまじない
         pygame.display.update()
         for event in pygame.event.get():
