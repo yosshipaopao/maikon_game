@@ -137,6 +137,8 @@ class Ball(pygame.sprite.Sprite):
         self.rect.centerx = self.player.rect.centerx
         self.rect.bottom = self.player.rect.top
         radian=random.uniform(60,120)
+        while abs(90-radian)<10:
+            radian+=random.uniform(-30,30)
         angle = math.radians(radian)
         self.dx = self.speed * math.cos(angle)
         self.dy = -self.speed * math.sin(angle)
@@ -145,8 +147,8 @@ class Ball(pygame.sprite.Sprite):
         self.rect.centerx += self.dx
         self.rect.centery += self.dy
         
-        if self.rect.left < SIZE.left:
-            self.rect.left = SIZE.left
+        if self.rect.left < SIZE.left+1:
+            self.rect.left = SIZE.left+1
             self.dx = -self.dx
         if self.rect.right > SIZE.right-120:
             self.rect.right = SIZE.right-120
@@ -155,11 +157,8 @@ class Ball(pygame.sprite.Sprite):
             self.rect.top = SIZE.top
             self.dy = -self.dy
         if self.rect.colliderect(self.player.rect) and self.dy > 0:
-            (x1, y1) = (self.player.rect.left - self.rect.width, self.angle_left)
-            (x2, y2) = (self.player.rect.right, self.angle_right)
-            x = self.rect.left
-            y = (float(y2-y1)/(x2-x1)) * (x - x1) + y1
-            angle = math.radians(y+random.uniform(-15,15))
+            angle=math.acos(self.dx/self.speed)
+            angle+=random.random()/5
             self.dx = self.speed * math.cos(angle)
             self.dy = -self.speed * math.sin(angle)
         if self.rect.top > SIZE.bottom:#失敗時
