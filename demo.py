@@ -146,7 +146,11 @@ class Ball(pygame.sprite.Sprite):
     def move(self):
         self.rect.centerx += self.dx
         self.rect.centery += self.dy
-        
+        if -1<self.dx<1:
+            if self.dx > 0:
+                self.dx += 0.1
+            else:
+                self.dx -= 0.1
         if self.rect.left < SIZE.left+1:
             self.rect.left = SIZE.left+1
             self.dx = -self.dx
@@ -186,16 +190,13 @@ class Ball(pygame.sprite.Sprite):
                     self.dy = -self.dy
                 self.info.add_score(1)
 def main():
-    STATUS=0
-    TIMER=0
+    #LED_PIN.value=True
     pygame.init()
     screen = pygame.display.set_mode(SIZE.size)
     BG_IMG = pygame.image.load("background.png")
     BLOCK_IMG =pygame.image.load("brick.png")
-    TITLE_IMG = pygame.image.load("title.png")
     PLAYER_IMG= pygame.image.load("player.png")
     BALL_IMG= pygame.image.load("ball.png")
-    FONT=pygame.font.SysFont("Terminal", 25)
     group = pygame.sprite.RenderUpdates()
     blocks = pygame.sprite.Group()
     Player.containers=group
