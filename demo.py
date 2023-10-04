@@ -8,11 +8,9 @@ from PIL import Image
 from busio import SPI
 from board import SCK, MOSI, MISO, D8, D18, D23, D24, D2, D3,D20,D21,D19,D26
 from digitalio import DigitalInOut, Direction,Pull
-from analogio import AnalogIn
 from adafruit_rgb_display.rgb import color565
 from adafruit_rgb_display.ili9341 import ILI9341
-import RPi.GPIO as GPIO
-GPIO.cleanup()
+
 CS_PIN    = DigitalInOut(D8)
 LED_PIN   = DigitalInOut(D18)
 RESET_PIN = DigitalInOut(D23)
@@ -35,16 +33,6 @@ display = ILI9341(
     rotation = 90,
     
     baudrate=24000000)
-
-GPIO.setmode(GPIO.BCM)
-CTRL_T=DigitalInOut(D20)
-CTRL_L=DigitalInOut(D21)
-
-#GPIO.setup(20, GPIO.IN)
-#GPIO.setup(21, GPIO.IN)
-GPIO.setup(19, GPIO.IN)
-GPIO.setup(26, GPIO.IN)
-
 """
 
 
