@@ -51,11 +51,9 @@ block =[[]]
 SIZE=Rect(0, 0, 320, 240)
 
 
-
 def set_blocklist(stage):
     global block
-    if stage == 1:
-        
+    if stage %2 == 0:
         block = [
             [1,1,1,1,1,1,1,1,1,1],
             [1,0,1,0,1,1,0,1,0,1],
@@ -63,34 +61,16 @@ def set_blocklist(stage):
             [1,1,0,1,1,1,1,0,1,1],
             [1,1,1,1,1,1,1,1,1,1]
         ]
-        """
-        # for debug
-        block = [
-            [0,0,0,0,1,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0,0,0]
-        ]"""
-    elif stage == 2:
+    elif stage %2== 1:
         block = [
             [1,1,1,1,1,1,1,1,1,1],
-            [1,0,1,0,1,1,0,1,0,1],
-            [1,1,1,0,1,1,0,1,1,1],
-            [1,1,0,1,1,1,1,0,1,1],
+            [1,1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1,1],
             [1,1,1,1,1,1,1,1,1,1]
         ]
-        """
-        # for debug
-        block = [
-            [0,0,0,0,1,0,0,0,0,1],
-            [0,0,0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0,0,0]
-        ]
-        """
     return block
+
 class Block(pygame.sprite.Sprite):
     def __init__(self, image, x,y):
         pygame.sprite.Sprite.__init__(self, self.containers)
@@ -145,6 +125,8 @@ class Ball(pygame.sprite.Sprite):
         self.rect.centerx = self.player.rect.centerx
         self.rect.bottom = self.player.rect.top
         radian=random.uniform(60,120)
+        while abs(90-radian)<10:
+            radian+=random.uniform(-30,30)
         angle = math.radians(radian)
         self.dx = self.speed * math.cos(angle)
         self.dy = -self.speed * math.sin(angle)
@@ -152,9 +134,13 @@ class Ball(pygame.sprite.Sprite):
     def move(self):
         self.rect.centerx += self.dx
         self.rect.centery += self.dy
-        
-        if self.rect.left < SIZE.left:
-            self.rect.left = SIZE.left
+        if -1<self.dx<1:
+            if self.dx > 0:
+                self.dx += 0.1
+            else:
+                self.dx -= 0.1
+        if self.rect.left < SIZE.left+1:
+            self.rect.left = SIZE.left+1
             self.dx = -self.dx
         if self.rect.right > SIZE.right-120:
             self.rect.right = SIZE.right-120
@@ -163,15 +149,13 @@ class Ball(pygame.sprite.Sprite):
             self.rect.top = SIZE.top
             self.dy = -self.dy
         if self.rect.colliderect(self.player.rect) and self.dy > 0:
-            (x1, y1) = (self.player.rect.left - self.rect.width, self.angle_left)
-            (x2, y2) = (self.player.rect.right, self.angle_right)
-            x = self.rect.left
-            y = (float(y2-y1)/(x2-x1)) * (x - x1) + y1
-            angle = math.radians(y)
+            angle=math.acos(self.dx/self.speed)
+            angle+=random.random()/5
             self.dx = self.speed * math.cos(angle)
             self.dy = -self.speed * math.sin(angle)
         if self.rect.top > SIZE.bottom:#失敗時
                 self.update = self.start
+                self.info.add_score(-10)
         
         blocks_collided = pygame.sprite.spritecollide(self, self.blocks, True)
         if blocks_collided:
@@ -293,7 +277,6 @@ def main():
                     info.stage=1
                     STATUS=0
         
-        print(GPIO.input(19),GPIO.input(26))
         ## ここからおまじない
         pygame.display.update()
         for event in pygame.event.get():
@@ -307,9 +290,7 @@ def main():
         ### こちらがディスプレイ表示用
         pixArray = pygame.surfarray.pixels3d(screen)
         array = numpy.fliplr(numpy.rot90(numpy.uint8(pixArray),-1))
-        #array = cv2.cvtColor(array, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(array)
-        #img.save("screen.png")
         display.image(img)
         del pixArray
         del array
