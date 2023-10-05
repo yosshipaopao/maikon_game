@@ -219,18 +219,31 @@ def main():
     ball=Ball(BALL_IMG,player,blocks,info,5, 135, 45)
 
     clock = pygame.time.Clock()
+    A_BTN_CNT=0
+    B_BTN_CNT=0
+
     while 1:
         clock.tick(20)#fps
         screen.blit(BG_IMG, (0, 0))
         A_BTN=GPIO.input(19)==1
         B_BTN=GPIO.input(26)==1
+        if A_BTN:
+            A_BTN_CNT+=1
+        else:
+            A_BTN_CNT=0
+        
+        if B_BTN:
+            B_BTN_CNT+=1
+        else:
+            B_BTN_CNT=0
+        
 
         if STATUS==0:
             screen.blit(TITLE_IMG,(30,30))
             tutorial=FONT.render("[A]to start",True,(0,0,0))
             screen.blit(tutorial,(30,150))
             #変更ポイント
-            if A_BTN:
+            if A_BTN_CNT>5:
                 STATUS=1
                 TIMER=0
         
@@ -272,10 +285,10 @@ def main():
                 screen.blit(tutorial,(30,50))
                 tutorial=FONT.render("[B] to title",True,(0,0,0))
                 screen.blit(tutorial,(30,100))
-                if A_BTN:
+                if A_BTN_CNT>5:
                     STATUS=1
                     TIMER=0
-                if B_BTN:
+                if B_BTN_CNT>5:
                     info.score=0
                     info.stage=1
                     STATUS=0
