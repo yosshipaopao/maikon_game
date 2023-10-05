@@ -5,10 +5,8 @@ import pygame
 from pygame.locals import *
 from PIL import Image
 from busio import SPI
-from board import SCK, MOSI, MISO, D8, D18, D23, D24, D2, D3,D20,D21,D19,D26
-from digitalio import DigitalInOut, Direction,Pull
-from analogio import AnalogIn
-from adafruit_rgb_display.rgb import color565
+from board import SCK, MOSI, MISO, D8, D18, D23, D24, D3
+from digitalio import DigitalInOut, Direction
 from adafruit_rgb_display.ili9341 import ILI9341
 import RPi.GPIO as GPIO
 
@@ -37,11 +35,7 @@ display = ILI9341(
     baudrate=24000000)
 
 GPIO.setmode(GPIO.BCM)
-CTRL_T=DigitalInOut(D20)
-CTRL_L=DigitalInOut(D21)
 
-#GPIO.setup(20, GPIO.IN)
-#GPIO.setup(21, GPIO.IN)
 GPIO.setup(19, GPIO.IN)
 GPIO.setup(26, GPIO.IN)
 
@@ -91,6 +85,7 @@ class Info():
         screen.blit(stage, (self.x, self.y+20))
     def add_score(self, x):
         self.score += x
+        self.score=max(0,self.score)
     def add_stage(self):
         self.stage += 1
 class Player(pygame.sprite.Sprite):
