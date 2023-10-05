@@ -195,6 +195,7 @@ class Ball(pygame.sprite.Sprite):
                     self.dy = -self.dy
                 self.info.add_score(1)
 def main():
+    LED_PIN.value=True
     STATUS=0
     TIMER=0
     pygame.init()
@@ -219,16 +220,17 @@ def main():
 
     clock = pygame.time.Clock()
     while 1:
-        pressed_key = pygame.key.get_pressed()
         clock.tick(20)#fps
         screen.blit(BG_IMG, (0, 0))
+        A_BTN=GPIO.input(19)==1
+        B_BTN=GPIO.input(26)==1
 
         if STATUS==0:
             screen.blit(TITLE_IMG,(30,30))
-            tutorial=FONT.render("[Space]to start",True,(0,0,0))
+            tutorial=FONT.render("[A]to start",True,(0,0,0))
             screen.blit(tutorial,(30,150))
             #変更ポイント
-            if pressed_key[K_SPACE]:
+            if A_BTN:
                 STATUS=1
                 TIMER=0
         
@@ -246,10 +248,10 @@ def main():
                 screen.blit(tutorial,(30,100))
             else:#ゲーム is here
                 # 変更ポイント
-                if pressed_key[K_LEFT]:
+                if B_BTN:
                     player.move(-5)
                 #変更ポイント
-                if pressed_key[K_RIGHT]:
+                if A_BTN:
                     player.move(5)
 
                 info.draw(screen)
@@ -266,20 +268,19 @@ def main():
                 tutorial=FONT.render("STAGE CLEAR",True,(0,0,0))
                 screen.blit(tutorial,(30,50))
             else:
-                tutorial=FONT.render("[Space] to next",True,(0,0,0))
+                tutorial=FONT.render("[A] to next",True,(0,0,0))
                 screen.blit(tutorial,(30,50))
                 tutorial=FONT.render("[B] to title",True,(0,0,0))
                 screen.blit(tutorial,(30,100))
-                if pressed_key[K_SPACE]:
+                if A_BTN:
                     STATUS=1
                     TIMER=0
-                if pressed_key[K_b]:
+                if B_BTN:
                     info.score=0
                     info.stage=1
                     STATUS=0
-                
-        print("!",CTRL_L.value , CTRL_T.value)
-        print("?",GPIO.input(19),GPIO.input(26))
+        
+        print(GPIO.input(19),GPIO.input(26))
         ## ここからおまじない
         pygame.display.update()
         for event in pygame.event.get():
